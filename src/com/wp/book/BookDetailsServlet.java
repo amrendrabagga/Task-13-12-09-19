@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +15,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class BookDetailsServlet
@@ -30,7 +32,8 @@ public class BookDetailsServlet extends HttpServlet {
 
 		try {
 			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
+			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
+					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
 			psBookDetails = con.prepareStatement("select * from books where book_id=?");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -44,6 +47,7 @@ public class BookDetailsServlet extends HttpServlet {
 		response.setContentType("text/html");
 		String code = request.getParameter("code");
 
+		HttpSession session = request.getSession();
 		Cookie[] cookies = request.getCookies();
 		int count = 1;
 		boolean foundCookie = false;
@@ -62,7 +66,7 @@ public class BookDetailsServlet extends HttpServlet {
 		}
 		if (!foundCookie) {
 			Cookie newCookie = new Cookie("" + code, "1");
-			newCookie.setMaxAge(60*30);//half hour
+			newCookie.setMaxAge(60 * 30);// half hour
 			response.addCookie(newCookie);
 		}
 		PrintWriter out = response.getWriter();
@@ -79,10 +83,17 @@ public class BookDetailsServlet extends HttpServlet {
 				String title = rs.getString(2);
 				String subject = rs.getString(3);
 				int price = rs.getInt(4);
-				if (count > 10)
+				if (count > 10) {
+					HashMap<String, Integer> updatedPrice = new HashMap<>();
 					price = (int) (price * 1.2);
-				else if (count > 5)
+					updatedPrice.put(bcode, price);
+					session.setAttribute("updatedPrice", updatedPrice);
+				} else if (count > 5) {
+					HashMap<String, Integer> updatedPrice = new HashMap<>();
 					price = (int) (price * 1.1);
+					updatedPrice.put(bcode, price);
+					session.setAttribute("updatedPrice", updatedPrice);
+				}
 				out.println("<table border=2 cellpadding=0 cellspacing=0>");
 				out.println("<tr>");
 				out.println("<td>BCode</td>");
@@ -107,7 +118,7 @@ public class BookDetailsServlet extends HttpServlet {
 			}
 			out.println("<hr>");
 			out.println("<a href=CartManager?code=" + code + ">Add-To-Cart</a><br>");
-			out.println("<a href=SubjectPageServlet>Subject-Page</a><br>");
+			out.println("<a href='ExploreStore.jsp'>Subject-Page</a><br>");
 			out.println("<a href=buyerpage.jsp>Buyer-Page</a><br>");
 			out.println("</body></html>");
 

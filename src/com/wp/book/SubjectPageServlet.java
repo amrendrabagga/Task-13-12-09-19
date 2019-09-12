@@ -21,17 +21,17 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/SubjectPageServlet")
 public class SubjectPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
 	private Connection con;
-    private PreparedStatement psBookSubject;
-	
-    
+	private PreparedStatement psBookSubject;
+
 	@Override
 	public void init() throws ServletException {
-		
+
 		try {
 			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
+			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
+					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
 			psBookSubject = con.prepareStatement("select distinct subject from books");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -41,40 +41,40 @@ public class SubjectPageServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out=response.getWriter();
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
 		Cookie[] cookies = request.getCookies();
 		String s = "All Books";
-		for(Cookie cookie : cookies) {
-			String cookieName = cookie.getName();
-			if(cookieName.equals("subjectOffer"))
-				s = cookie.getValue() + " books";
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				String cookieName = cookie.getName();
+				if (cookieName.equals("subjectOffer"))
+					s = cookie.getValue() + " books";
+			}
 		}
-		try{
-		
-		ResultSet rs=psBookSubject.executeQuery();
-		out.println("<html>");
-		out.println("<html><body>");
-		out.println("<marquee><h4>Attractive Offers On " + s + "</h4></marquee>");
-		out.println("<h3>Select The Desired Subject</h3>");
-		out.println("<hr>");
-		while(rs.next()){
-			String sub=rs.getString(1);
-			out.println("<a href=BookListServlet?subject="+sub+">");
-			out.println(sub);
-			out.println("</a><br>");
-		}
-		out.println("<hr>");
-		out.println("<a href=buyerpage.jsp>Buyer-Page</a>");
-		out.println("</body></html>");
-		
-		
-		
-		
-		}catch(Exception e){
+		try {
+
+			ResultSet rs = psBookSubject.executeQuery();
+			out.println("<html>");
+			out.println("<html><body>");
+			out.println("<marquee><h4>Attractive Offers On " + s + "</h4></marquee>");
+			out.println("<h3>Select The Desired Subject</h3>");
+			out.println("<hr>");
+			while (rs.next()) {
+				String sub = rs.getString(1);
+				out.println("<a href=BookListServlet?subject=" + sub + ">");
+				out.println(sub);
+				out.println("</a><br>");
+			}
+			out.println("<hr>");
+			out.println("<a href=buyerpage.jsp>Buyer-Page</a>");
+			out.println("</body></html>");
+
+		} catch (Exception e) {
 			out.println(e);
 		}
 	}
-
 
 }

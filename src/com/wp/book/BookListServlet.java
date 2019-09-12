@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,62 +21,62 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/BookListServlet")
 public class BookListServlet extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	private Connection con;
-    private PreparedStatement psBookList;
-	
-    
-	@Override
-	public void init() throws ServletException {
-		
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
 		try {
-			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
-			psBookList = con.prepareStatement("select book_id,title from books where subject=?");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		
-		String subject=request.getParameter("subject");
-		Cookie subPreferenceCookie = new Cookie("subjectOffer",subject);
-		subPreferenceCookie.setMaxAge(120);//for 1 min
-		response.addCookie(subPreferenceCookie);
-		
-		PrintWriter out=response.getWriter();
-		try{
-		
-		psBookList.setString(1, subject);
-		ResultSet rs=psBookList.executeQuery();
-		out.println("<html>");
-		out.println("<html><body>");
-		out.println("<h3>Select The Desired Title</h3>");
-		out.println("<hr>");
-		while(rs.next()){
-			String code=rs.getString(1);
-			String title=rs.getString(2);
+			String[] subjects = request.getParameterValues("checkedSubject");
 			
-			out.println("<a href=BookDetailsServlet?code="+code+">");
-			out.println(title);
-			out.println("</a><br>");
-		}
-		out.println("<hr>");
-		out.println("<a href=SubjectPageServlet>Subject-Page</a>");
-		out.println("<a href=buyerpage.jsp>Buyer-Page</a>");
-		out.println("</body></html>");
+			String append = "";
+			if (subjects != null) {
+				
+				for (String subject : subjects) {
+					append += "'" + subject + "',";
+				}
+				append = append.substring(0, append.length() - 1);
+				Cookie subPreferenceCookie = new Cookie("subjectOffer", String.join(",", subjects));
+				subPreferenceCookie.setMaxAge(120);// for 1 min
+				response.addCookie(subPreferenceCookie);
+			}
+			Connection con = (Connection) getServletContext().getAttribute("dbConnection");
+			String sql = "select book_id,title from books";
+			if (subjects != null)
+				sql = "select book_id,title from books where subject in(" + append + ")";
+			PreparedStatement psBookList = con.prepareStatement(sql);
 		
-		
-		
-		
-		}catch(Exception e){
+			ResultSet rs = psBookList.executeQuery();
+			out.println("<html>");
+			out.println("<html><body>");
+			out.println("<h3>Select The Desired Title</h3>");
+			out.println("<hr>");
+			while (rs.next()) {
+				String code = rs.getString(1);
+				String title = rs.getString(2);
+
+				out.println("<a href=BookDetailsServlet?code=" + code + ">");
+				out.println(title);
+				out.println("</a><br>");
+			}
+			out.println("<hr>");
+			out.println("<a href='ExploreStore.jsp'>Subject-Page</a>");
+			out.println("<a href=buyerpage.jsp>Buyer-Page</a>");
+			out.println("</body></html>");
+
+		} catch (Exception e) {
 			out.println(e);
 		}
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
 	}
 
 }
