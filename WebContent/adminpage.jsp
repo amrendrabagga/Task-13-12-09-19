@@ -7,6 +7,7 @@
 <title>ADMIN</title>
 </head>
 <body>
+
 	<h1 align="center">WELCOME TO DASHBOARD</h1>
 	<hr />
 	<a href="AddBook.jsp">ADD BOOK</a>
@@ -14,6 +15,10 @@
 	<a href="ViewBook.jsp">VIEW BOOK</a>
 	<br />
 	<a href="ListBooks">BOOKS LIST</a>
-
+	<br />
+	<a href="DeleteBook.jsp">DELETE BOOK</a>
+	<br />
+	<a href="Logout">Logout</a>
+	<hr>
 </body>
 </html>

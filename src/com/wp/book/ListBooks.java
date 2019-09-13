@@ -32,7 +32,7 @@ public class ListBooks extends HttpServlet {
 
 		}
 		out.print("<hr/>");
-		out.print("<a href='index.jsp'>" + "Go To Dashboard" + "</a>");
+		out.print("<a href='adminpage.jsp'>" + "Go To Dashboard" + "</a>");
 
 	}
 

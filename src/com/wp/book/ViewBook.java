@@ -27,7 +27,8 @@ public class ViewBook extends HttpServlet {
 	public void init() throws ServletException {
 		try {
 			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
+			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
+					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
 			psSearch = con.prepareStatement("Select title,subject,price from books where subject like ?");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

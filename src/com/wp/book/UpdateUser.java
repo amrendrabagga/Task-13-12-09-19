@@ -22,7 +22,7 @@ public class UpdateUser extends HttpServlet {
 
 	private Connection con;
 	private PreparedStatement psUpdate;
-	
+
 	@Override
 	public void init() throws ServletException {
 		try {
@@ -36,14 +36,13 @@ public class UpdateUser extends HttpServlet {
 		}
 	}
 
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		
+
 		try {
-			String useridSession = (String)request.getSession().getAttribute("userid");
+			String useridSession = (String) request.getSession().getAttribute("userid");
 			String userid = request.getParameter("userid");
 			String password = request.getParameter("password").trim();
 			String confPassword = request.getParameter("confPassword").trim();
@@ -51,7 +50,7 @@ public class UpdateUser extends HttpServlet {
 			String address = request.getParameter("address");
 			String mobile = request.getParameter("mobile");
 			String email = request.getParameter("email");
-			
+
 			RequestDispatcher rd = request.getRequestDispatcher("UpdateProfile.jsp");
 			if (password.equals(confPassword)) {
 				psUpdate.setString(1, userid);
@@ -71,7 +70,7 @@ public class UpdateUser extends HttpServlet {
 				}
 			} else {
 				// error msg
-				
+
 				out.println("<script type=\"text/javascript\">");
 				out.println("alert('Password Mismatch');");
 				out.println("</script>");
@@ -83,7 +82,6 @@ public class UpdateUser extends HttpServlet {
 		}
 	}
 
-	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);

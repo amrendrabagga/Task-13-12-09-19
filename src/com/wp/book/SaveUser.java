@@ -21,64 +21,64 @@ public class SaveUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection con;
 	private PreparedStatement psRegister;
-	
-	
-	public void init(){
-		try{
+
+	public void init() {
+		try {
 			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
-		String sql="insert into users values(?,?,?,?,?,?)";
-		psRegister=con.prepareStatement(sql);
-		}catch(Exception e){
+			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
+					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
+			String sql = "insert into users values(?,?,?,?,?,?)";
+			psRegister = con.prepareStatement(sql);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void destroy(){
-		try{
+
+	public void destroy() {
+		try {
 			con.close();
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		response.setContentType("text/html");
-		PrintWriter out=response.getWriter();
-		//reads-request
-		String userid=request.getParameter("userid");
-		String password=request.getParameter("password");
-		String username=request.getParameter("username");
-		String address=request.getParameter("address");
-		String mobile=request.getParameter("mobile");
-		String email=request.getParameter("email");
-		//process
-		try{
+		PrintWriter out = response.getWriter();
+		// reads-request
+		String userid = request.getParameter("userid");
+		String password = request.getParameter("password");
+		String username = request.getParameter("username");
+		String address = request.getParameter("address");
+		String mobile = request.getParameter("mobile");
+		String email = request.getParameter("email");
+		// process
+		try {
 			psRegister.setString(1, userid);
 			psRegister.setString(2, password);
 			psRegister.setString(3, username);
 			psRegister.setString(4, address);
 			psRegister.setString(5, mobile);
 			psRegister.setString(6, email);
-			int n=psRegister.executeUpdate();
+			int n = psRegister.executeUpdate();
 			RequestDispatcher rd = request.getRequestDispatcher("registration.jsp");
-			if(n!=0) {
+			if (n != 0) {
 				out.println("Registration Completed");
 				rd.include(request, response);
 			}
-				
+
 			else {
 				out.println("Error, TRY AGAIN");
 				rd.include(request, response);
 			}
-			
-			
-		}catch(Exception e){
+
+		} catch (Exception e) {
 			out.println(e);
 		}
-		
-		
-	}
 
+	}
 
 }

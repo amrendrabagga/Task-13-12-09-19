@@ -10,7 +10,7 @@
 	<h1 align="center">ADD BOOK</h1>
 	<hr />
 	<div align="center">
-		<form action="InsertBook" method="post">
+		<form action="AddBookController" method="post">
 			<table>
 				<tr>
 					<td>Title</td>

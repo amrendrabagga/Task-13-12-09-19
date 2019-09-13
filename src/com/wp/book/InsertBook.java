@@ -22,12 +22,13 @@ public class InsertBook extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection con;
 	private PreparedStatement insert;
-	
+
 	@Override
 	public void init() throws ServletException {
 		try {
 			Class.forName(getServletContext().getInitParameter("driver"));
-			con = DriverManager.getConnection(getServletContext().getInitParameter("url"), getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
+			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
+					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
 			insert = con.prepareStatement("insert into books(title,subject,price) values(?,?,?)");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -51,19 +52,18 @@ public class InsertBook extends HttpServlet {
 			insert.setString(1, bookTitle);
 			insert.setString(2, bookSubject);
 			insert.setString(3, bookPrice);
-			
+
 			int n = insert.executeUpdate();
 			if (n != 0) {
 				out.print("BOOK ADDED SUCCESSFULLY");
 				RequestDispatcher rd = request.getRequestDispatcher("/AddBook.jsp");
-				rd.include(request,response);
-				
+				rd.include(request, response);
+
 			} else {
 				RequestDispatcher rd = request.getRequestDispatcher("/AddBook.jsp");
-				rd.include(request,response);
+				rd.include(request, response);
 				out.print("TRY AGAIN");
 			}
-
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

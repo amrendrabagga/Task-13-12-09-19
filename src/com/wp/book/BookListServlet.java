@@ -31,10 +31,10 @@ public class BookListServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		try {
 			String[] subjects = request.getParameterValues("checkedSubject");
-			
+
 			String append = "";
 			if (subjects != null) {
-				
+
 				for (String subject : subjects) {
 					append += "'" + subject + "',";
 				}
@@ -48,7 +48,7 @@ public class BookListServlet extends HttpServlet {
 			if (subjects != null)
 				sql = "select book_id,title from books where subject in(" + append + ")";
 			PreparedStatement psBookList = con.prepareStatement(sql);
-		
+
 			ResultSet rs = psBookList.executeQuery();
 			out.println("<html>");
 			out.println("<html><body>");
@@ -63,7 +63,7 @@ public class BookListServlet extends HttpServlet {
 				out.println("</a><br>");
 			}
 			out.println("<hr>");
-			out.println("<a href='ExploreStore.jsp'>Subject-Page</a>");
+			out.println("<a href='ExploreStore.jsp'>Subject-Page</a><br>");
 			out.println("<a href=buyerpage.jsp>Buyer-Page</a>");
 			out.println("</body></html>");
 

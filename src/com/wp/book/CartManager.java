@@ -19,25 +19,25 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/CartManager")
 public class CartManager extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-   
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		PrintWriter out = response.getWriter();
 		String code = request.getParameter("code");
-		
+
 		HttpSession session = request.getSession();
 		List<String> cartList;
-		if(session.getAttribute("cart")!=null) {
+		if (session.getAttribute("cart") != null) {
 			cartList = (List<String>) session.getAttribute("cart");
 			cartList.add(code);
-		}
-		else {
+		} else {
 			cartList = new ArrayList<>();
 			cartList.add(code);
 		}
 		session.setAttribute("cart", cartList);
 		out.println("<script type=\"text/javascript\">");
-		out.println("alert('Item Added to Cart Successfully');");	 
-		out.println("</script>");	
+		out.println("alert('Item Added to Cart Successfully');");
+		out.println("</script>");
 		RequestDispatcher rd = request.getRequestDispatcher("buyerpage.jsp");
 		rd.include(request, response);
 	}

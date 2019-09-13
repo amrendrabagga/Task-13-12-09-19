@@ -24,6 +24,6 @@
 		</form>
 	</div>
 	<hr />
-	<a href="index.jsp">Go to DashBoard</a>
+	<a href="buyerpage.jsp">Go to DashBoard</a>
 </body>
 </html>

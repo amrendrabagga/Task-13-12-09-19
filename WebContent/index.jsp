@@ -20,7 +20,7 @@
 <body>
 	<h3>Online Book Store</h3>
 	<hr>
-	<form action="VerifyUser" method="post">
+	<form action="User" method="post">
 	<pre>
 		Userid			<input type="text" name="userid" value="<%=s1%>" />
 		Password		<input type="password" name="password" value="<%=s2%>"/>
