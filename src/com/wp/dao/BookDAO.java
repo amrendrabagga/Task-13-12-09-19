@@ -3,6 +3,8 @@ package com.wp.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -66,8 +68,88 @@ public class BookDAO implements DAO {
 
 	@Override
 	public List<Book> getAllBooks() {
-		// TODO Auto-generated method stub
+		List<Book> list = new ArrayList<>();
+		try {
+			Statement psFetch = con.createStatement();
+			ResultSet rsFetch = psFetch.executeQuery("select *from books");
+			while(rsFetch.next()) {
+				Book book = new Book();
+				book.setBook_id(rsFetch.getInt(1));
+				book.setTitle(rsFetch.getString(2));
+				book.setSubject(rsFetch.getString(3));
+				book.setPrice(rsFetch.getInt(4));
+				list.add(book);
+			}
+			return list;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
+
+	@Override
+	public List<Book> searchBook(String titleorcid) {
+		List<Book> list = new ArrayList<Book>();
+		try {
+		PreparedStatement psSearch = con.prepareStatement("select *from books where book_id like '"+titleorcid+"%' " +"or title like '"+titleorcid+"%'" );
+		ResultSet rsSearch = psSearch.executeQuery();
+		while(rsSearch.next()) {
+			
+			Book book = new Book();
+			book.setBook_id(rsSearch.getInt(1));
+			book.setTitle(rsSearch.getString(2));
+			book.setSubject(rsSearch.getString(3));
+			book.setPrice(rsSearch.getInt(4));
+			list.add(book);
+		}
+		
+		return list;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return list;
+	}
+
+	@Override
+	public Book searchBook(int book_id) {
+		Book book=null;
+		try {
+		PreparedStatement psSearch = con.prepareStatement("select * from books where book_id=?");
+		psSearch.setInt(1, book_id);
+		ResultSet rsSearch = psSearch.executeQuery();
+		if(rsSearch.next()) {
+			book=new Book();
+			book.setBook_id(rsSearch.getInt(1));
+			book.setTitle(rsSearch.getString(2));
+			book.setSubject(rsSearch.getString(3));
+			book.setPrice(rsSearch.getInt(4));
+			return book;
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		return book;
+	}
+
+	@Override
+	public int updateBook(int book_id, String title, String subject, int price) {
+		try {
+		PreparedStatement psUpdate = con.prepareStatement("update books set title=?,subject=?,price=? where book_id=?");
+		psUpdate.setString(1, title);
+		psUpdate.setString(2, subject);
+		psUpdate.setInt(3, price);
+		psUpdate.setInt(4, book_id);
+		int check = psUpdate.executeUpdate();
+		return check;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
 
 }

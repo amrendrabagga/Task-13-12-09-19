@@ -14,15 +14,15 @@
 			<table>
 				<tr>
 					<td>Title</td>
-					<td><input type="text" name="bookTitle" />
+					<td><input type="text" name="bookTitle" required="required" pattern="[a-zA-Z0-9]+"/>
 				</tr>
 				<tr>
 					<td>Subject Name</td>
-					<td><input type="text" name="bookSubject" />
+					<td><input type="text" name="bookSubject" required="required" pattern="[a-zA-Z0-9]+"/>
 				</tr>
 				<tr>
 					<td>Price</td>
-					<td><input type="text" name="price" />
+					<td><input type="text" name="price" required="required" pattern="[0-9]+"/>
 				</tr>
 				<tr>
 					<td colspan=2 align="center"><input type="submit"

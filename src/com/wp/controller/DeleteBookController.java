@@ -1,6 +1,7 @@
 package com.wp.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,12 +33,21 @@ public class DeleteBookController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		PrintWriter out = response.getWriter();
 		BookDAO bookDAO = new BookDAO(getServletContext());
-		int bookId = Integer.parseInt(request.getParameter("bookId"));
-		Book deletedBook = bookDAO.delete(bookId);
+		int bookId;
+		try {
+		bookId = Integer.parseInt(request.getParameter("bookId"));Book deletedBook = bookDAO.delete(bookId);
 		request.setAttribute("bookInfo", deletedBook);
 		request.getRequestDispatcher("BookDetails.jsp").forward(request, response);
+		}
+		catch(NumberFormatException e) {
+			out.println("<script type=\"text/javascript\">");
+			out.println("alert('Enter correct book id');");
+			out.println("</script>");
+			request.getRequestDispatcher("DeleteBook.jsp").include(request, response);
+		}
+		
 	}
 
 	/**

@@ -1,3 +1,4 @@
+<%@page import="com.wp.encrytion.AESDecryption"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>    
@@ -22,11 +23,11 @@
 <table align="center" style="font-size:18px;" cellpadding="8px">
 <tr>
 <td>UserID</td>
-<td><input type="text" name="userid" required="required" pattern="[a-zA-Z]+" value=<%=rsUser.getString(1) %>></td>
+<td><input type="text" name="userid" required="required" pattern="[a-zA-Z0-9]+" value=<%=rsUser.getString(1) %>></td>
 </tr>
 <tr>
 <td>Password</td>
-<td><input type="password" name="password" required="required" pattern="[a-zA-Z0-9]+" value=<%=rsUser.getString(2)%>></td>
+<td><input type="password" name="password" required="required" pattern="[a-zA-Z0-9]+" value=<%=AESDecryption.decrypt(rsUser.getString(2))%>></td>
 </tr>
 <tr>
 <td>ConfirmPassword</td>
@@ -43,7 +44,7 @@
 <tr>
 <tr>
 <td>Mobile</td>
-<td><input type="text" name="mobile" required="required" pattern="[1-9]{1}[0-9]{9}" value=<%=rsUser.getString(5) %>></td>
+<td><input type="text" name="mobile" required="required" pattern="[7-9]{1}[0-9]{9}" value=<%=rsUser.getString(5) %>></td>
 </tr>
 <tr>
 <td>Email</td>
@@ -55,5 +56,7 @@
 
 </table>
 </form>
+<hr>
+<a href="buyerpage.jsp">BuyerPage</a>
 </body>
 </html>

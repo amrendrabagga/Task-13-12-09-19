@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.wp.encrytion.AESDecryption;
+
 /**
  * Servlet implementation class VerifyUser
  */
@@ -35,7 +37,7 @@ public class VerifyUser extends HttpServlet {
 			Class.forName(getServletContext().getInitParameter("driver"));
 			con = DriverManager.getConnection(getServletContext().getInitParameter("url"),
 					getServletContext().getInitParameter("user"), getServletContext().getInitParameter("pwd"));
-			psVerify = con.prepareStatement("select uname from users where userid=? and password=?");
+			psVerify = con.prepareStatement("select uname,password from users where userid=?");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -68,33 +70,41 @@ public class VerifyUser extends HttpServlet {
 			} else {
 
 				psVerify.setString(1, userid);
-				psVerify.setString(2, password);
+				//psVerify.setString(2, password);
 				ResultSet rs = psVerify.executeQuery();
 				if (rs.next()) {
+//					out.print("decrypting password");
+					String decryptedPassword = AESDecryption.decrypt(rs.getString(2));
+//					out.print("decrypting password is "+decryptedPassword);
+					if(password.equals(decryptedPassword)) {
+						// save userid and name in sessions
+						session.setAttribute("userid", userid);
+						session.setAttribute("uname", rs.getString(1));
+						// whether user want to save the password
+						String choice = request.getParameter("save");
+						if (choice != null) {
 
-					// save userid and name in sessions
+							Cookie c1 = new Cookie("id", userid);
+							Cookie c2 = new Cookie("pw", password);
 
-					session.setAttribute("userid", userid);
-					session.setAttribute("uname", rs.getString(1));
-					// whether user want to save the password
-					String choice = request.getParameter("save");
-					if (choice != null) {
+							c1.setMaxAge(60 * 60 * 24 * 7);
+							c2.setMaxAge(60 * 60 * 24 * 7);
 
-						Cookie c1 = new Cookie("id", userid);
-						Cookie c2 = new Cookie("pw", password);
+							response.addCookie(c1);
+							response.addCookie(c2);
 
-						c1.setMaxAge(60 * 60 * 24 * 7);
-						c2.setMaxAge(60 * 60 * 24 * 7);
-
-						response.addCookie(c1);
-						response.addCookie(c2);
+						}
+						RequestDispatcher buyerHome = request.getRequestDispatcher("buyerpage.jsp");
+						buyerHome.forward(request, response);
 
 					}
-					RequestDispatcher buyerHome = request.getRequestDispatcher("buyerpage.jsp");
-					buyerHome.forward(request, response);
-
+					else {
+						out.println("INVLAID PASSWORD");
+						rd.include(request, response);
+					}
+					
 				} else {
-					out.println("INVALID BUYER CREDENTIALS");
+					out.println("INVALID USERID");
 					rd.include(request, response);
 				}
 			}

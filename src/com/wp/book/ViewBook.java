@@ -50,7 +50,7 @@ public class ViewBook extends HttpServlet {
 			out.print("<h1 align='center'>SUBJECT WISE BOOKS</h1>");
 			out.print("<hr/>");
 			out.print("<div align='center'>");
-			out.print("<table border=1 cellpadding=0 cellspacing=0>");
+			out.print("<table border=1 cellpadding='5px' cellspacing=0>");
 			out.print("<tr>");
 			out.print("<th>");
 			out.print("title");

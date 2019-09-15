@@ -1,4 +1,4 @@
-package com.wp.book;
+package com.wp.filter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,10 +21,13 @@ import javax.servlet.http.HttpSession;
  * Servlet Filter implementation class SessionChecker
  */
 //"/BookStore/*"
-@WebFilter(urlPatterns = "/*", initParams = @WebInitParam(name = "excludeUrls", value = "/User,/index.jsp,/registration.jsp"))
+@WebFilter(urlPatterns = "/*",
+initParams = { @WebInitParam(name = "excludeUrls", value = "/User,/index.jsp,/registration.jsp,/SaveUser"),
+@WebInitParam(name = "excludeAdminUrls", value = "/buyerpage.jsp,/BookDetailsServlet,/BookListServlet,/CartManager,/RemoveFromCart,/UpdateUser,/ViewBook,/ViewBook.jsp,/ViewCart.jsp,/UpdateProfile.jsp,/ExploreStore.jsp")})
 public class SessionChecker implements Filter {
 
 	List<String> excludedURL;
+	List<String> excludedAdminURL;
 
 	/**
 	 * Default constructor.
@@ -50,8 +53,24 @@ public class SessionChecker implements Filter {
 		if (!excludedURL.contains(path)) {
 			HttpServletRequest req = (HttpServletRequest) request;
 			HttpSession session = req.getSession();
+			
 			if (session != null && session.getAttribute("userid") != null) {
-				chain.doFilter(request, response);
+				//check user whether admin and buyer
+				//such that either one can not browse other one pages
+				String userid = (String)session.getAttribute("userid");
+				if(userid.equals("000")) {
+					if(!excludedAdminURL.contains(path))
+						chain.doFilter(request, response);
+					else
+						request.getRequestDispatcher("adminpage.jsp").forward(request, response);
+				}
+				else {
+					if(excludedAdminURL.contains(path)||path.equals("/Logout"))
+						chain.doFilter(request, response);
+					else
+						request.getRequestDispatcher("buyerpage.jsp").forward(request, response);
+				}
+					
 			} else {
 				rd.forward(request, response);
 			}
@@ -65,7 +84,10 @@ public class SessionChecker implements Filter {
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 		String url = fConfig.getInitParameter("excludeUrls");
+		String buyerURL = fConfig.getInitParameter("excludeAdminUrls");
 		excludedURL = Arrays.asList(url.split(","));
+		excludedAdminURL = Arrays.asList(buyerURL.split(","));
+		
 
 	}
 
